@@ -1,4 +1,36 @@
-# UIPEthernet
+# UIPEthernet-HN
+
+This fork of UIPEthernet adds the ability to set the "hostname"
+
+It is 100% backwards compatible with the original (at the moment of forking)
+
+To use the new feature:
+`int  Ethernet.setHostname(void* name[, int len]);`
+
+name is length n, where 0 <= n <= 255
+...each octet(/uint8/byte/whatever) may contain any value 0..255
+if name is NULL, errorcode 1 is returned
+
+if len > 255 or len < -2, errorcode 2 is returned
+if len = -1, the name is treated as a NUL terminated C string and the actual length is calculated for you
+if len = -2, as per -1, and also the characters are validated as being in spec of RFC 1533/3.14
+...if validation fails, errorcode -x is returned where x is the character which failed validation
+if len >= 0, name[] is not validated, and the length specified is used
+
+...If len is not specified, -2 is used as a sane default.
+
+example code:
+int  err;
+if ((err = Ethernet.setHostname(name, len)) != 0) {
+  if      (err == 1)  invalid_name_pointer() ;
+  else if (err == 2)  invalid_length() ;
+  else if (err <  0)  invalid_character_in_name_at_position(-err) ;
+  else                unknown_error();
+}
+
+
+--original document begins--
+
 UIPEthernet library for Arduinos (Atmel AVR-s,Atmel SAM3X8E ARM Cortex-M3,STM32F series,ESP8266,Intel ARC32(Genuino101),Nordic nRF51(RFduino),Teensy boards,Realtek Ameba(RTL8195A,RTL8710)), ENC28j60 network chip compatible with Wiznet W5100 API
 
 Original UIPEthernet writed by Norbert Truchsess.

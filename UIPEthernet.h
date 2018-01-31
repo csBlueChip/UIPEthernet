@@ -88,6 +88,11 @@ public:
   IPAddress gatewayIP();
   IPAddress dnsServerIP();
 
+  static void configure(IPAddress ip, IPAddress dns, IPAddress gateway, IPAddress subnet);
+
+  // New function for user specified hostname
+  int setHostname(void* vp,  int len = -2);
+
 private:
   static memhandle in_packet;
   static memhandle uip_packet;
@@ -101,7 +106,7 @@ private:
   static unsigned long periodic_timer;
 
   static void init(const uint8_t* mac);
-  static void configure(IPAddress ip, IPAddress dns, IPAddress gateway, IPAddress subnet);
+//  static void configure(IPAddress ip, IPAddress dns, IPAddress gateway, IPAddress subnet);
 
   static void tick();
 

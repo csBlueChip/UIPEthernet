@@ -83,6 +83,13 @@ UIPEthernetClass::begin(const uint8_t* mac)
   }
   return ret;
 }
+
+// New function for user specified hostnames [see send_DHCP_MESSAGE()]
+int UIPEthernetClass::setHostname(void* vp,  int len)
+{
+  _dhcp = &s_dhcp;
+  return _dhcp->setHostname(vp, len);
+}
 #endif
 
 void

@@ -164,6 +164,10 @@ private:
   unsigned long _secTimeout;
   uint8_t _dhcp_state;
   UIPUDP _dhcpUdpSocket;
+
+  // Two new variables for user specified hostnames
+  uint8_t*  myhostname = NULL;
+  int       myhostlen  = -1;
   
   int request_DHCP_lease(void);
   void reset_DHCP_lease(void);
@@ -181,6 +185,9 @@ public:
   
   int beginWithDHCP(uint8_t *);
   int checkLease(void);
+  
+  // New function for user specified hostname
+  int setHostname(void* vp,  int len = -2);  // -2 will validate the nul-terminated string at 'vp'
 };
 #endif
 #endif

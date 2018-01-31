@@ -17,6 +17,30 @@
 #include "utility/logging.h"
 #include "utility/uip.h"
 
+// New function for user specified hostnames [see send_DHCP_MESSAGE()]
+// I appreciate that there are both risks and rewards for doing it this way
+// copy pointer : cheap and easy -vs- what if the original string is destroyed
+// strdup() : never lose the original string -vs- costs & risks of using malloc()
+// char hostname[255+1] : never lose the original string -vs- wasted memory
+int  DhcpClass::setHostname (void* vp,  int len)
+{
+  if (!vp)  return 1 ;
+  if ((len > 255) || (len < -2))  return 2 ;
+                                                         
+  myhostname = (uint8_t*)vp; // copy pointer
+  myhostlen  = (len < 0) ? strlen((char*)vp) : len ;
+
+  if (len == -2) {  // Validate the hostname
+    char*  cp = (char*)myhostname;
+    for (len = 0;  len < myhostlen;  len++, cp++) // OMG variable reuse - how old-skool :)
+	  if ( (*cp < 'a') && (*cp > 'z') &&
+	       (*cp < 'A') && (*cp > 'Z') &&
+	       (*cp < '0') && (*cp > '9') && (*cp != '-') )  return 0-(len+1) ;
+  }
+ 
+  return 0;
+}
+  
 int DhcpClass::beginWithDHCP(uint8_t *mac)
 {
     #if ACTLOGLEVEL>=LOG_DEBUG_V1
@@ -245,15 +269,26 @@ void DhcpClass::send_DHCP_MESSAGE(uint8_t messageType, uint16_t secondsElapsed)
 
     // OPT - host name
     buffer[16] = hostName;
-    buffer[17] = strlen(HOST_NAME) + 6; // length of hostname + last 3 bytes of mac address
-    strcpy((char*)&(buffer[18]), HOST_NAME);
+	
+	// If the user specified a hostname, do this new code
+	if (myhostname) {
+		buffer[17] = (uint8_t)(myhostlen & 0xFF);
+		_dhcpUdpSocket.write(buffer, 17+1);
+		if (buffer[17])  _dhcpUdpSocket.write(myhostname, buffer[17]);
 
-    printByte((char*)&(buffer[24]), _dhcpMacAddr[3]);
-    printByte((char*)&(buffer[26]), _dhcpMacAddr[4]);
-    printByte((char*)&(buffer[28]), _dhcpMacAddr[5]);
+	// else do the original code
+	} else {
+		// This is the original code
+		buffer[17] = strlen(HOST_NAME) + 6; // length of hostname + last 3 bytes of mac address
+		strcpy((char*)&(buffer[18]), HOST_NAME);
 
-    //put data in W5100 transmit buffer
-    _dhcpUdpSocket.write(buffer, 30);
+		printByte((char*)&(buffer[24]), _dhcpMacAddr[3]);
+		printByte((char*)&(buffer[26]), _dhcpMacAddr[4]);
+		printByte((char*)&(buffer[28]), _dhcpMacAddr[5]);
+
+		//put data in W5100 transmit buffer
+		_dhcpUdpSocket.write(buffer, 30);
+	}
 
     if(messageType == DHCP_REQUEST)
     {
