@@ -5,21 +5,22 @@ This fork of UIPEthernet adds the ability to set the "hostname"
 It is 100% backwards compatible with the original (at the moment of forking)
 
 To use the new feature:
-`int  Ethernet.setHostname(void* name[, int len]);`
+`int  Ethernet.setHostname(void* name[, int len = -2]);`
 
-name is length n, where 0 <= n <= 255
-...each octet(/uint8/byte/whatever) may contain any value 0..255
+name is length n, where 0 <= n <= 255<br>
+...each octet(/uint8/byte/whatever) may contain any value 0..255<br>
 if name is NULL, errorcode 1 is returned
 
-if len > 255 or len < -2, errorcode 2 is returned
-if len = -1, the name is treated as a NUL terminated C string and the actual length is calculated for you
-if len = -2, as per -1, and also the characters are validated as being in spec of RFC 1533/3.14
-...if validation fails, errorcode -x is returned where x is the character which failed validation
-if len >= 0, name[] is not validated, and the length specified is used
+if len > 255 or len < -2, errorcode 2 is returned<br>
+if len = -1, the name is treated as a NUL terminated C string and the actual length is calculated for you<br>
+if len = -2, as per -1, and also the characters are validated as being in spec of RFC 1533/3.14<br>
+...if validation fails, errorcode -x is returned where x is the character which failed validation<br>
+if len >= 0, name[] is not validated, and the length specified is used<br>
 
 ...If len is not specified, -2 is used as a sane default.
 
-example code:
+example code:<br>
+```c
 int  err;
 if ((err = Ethernet.setHostname(name, len)) != 0) {
   if      (err == 1)  invalid_name_pointer() ;
@@ -27,7 +28,7 @@ if ((err = Ethernet.setHostname(name, len)) != 0) {
   else if (err <  0)  invalid_character_in_name_at_position(-err) ;
   else                unknown_error();
 }
-
+```
 
 --original document begins--
 
