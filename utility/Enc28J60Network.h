@@ -25,6 +25,10 @@
 #ifndef Enc28J60Network_H_
 #define Enc28J60Network_H_
 
+#if defined(ARDUINO)
+  #include <variant.h>
+#endif
+
 #include "mempool.h"
 #if defined(__MBED__)
   #include <mbed.h>
@@ -85,9 +89,13 @@
    #elif defined(ARDUINO_ARCH_AMEBA) //Defined SS to pin 10
       #define ENC28J60_CONTROL_CS     SS //PC_0 A5 10
    #elif defined(ARDUINO_ARCH_SAM)
-      // Arduino Due (ARDUINO_ARCH_SAM) BOARD_SPI_DEFAULT_SS (SS3) defined to pin 78
-      //#define ENC28J60_CONTROL_CS     BOARD_SPI_DEFAULT_SS
-      #define ENC28J60_CONTROL_CS     BOARD_SPI_SS0
+      #if defined(_VARIANT_MACCHINA_M2_)
+         #define ENC28J60_CONTROL_CS     83 // BOARD_SPI_SS2  // this is the SPI_CS on "the 26pin connector [J15]"
+      #else
+         // Arduino Due (ARDUINO_ARCH_SAM) BOARD_SPI_DEFAULT_SS (SS3) defined to pin 78
+         //#define ENC28J60_CONTROL_CS     BOARD_SPI_DEFAULT_SS
+         #define ENC28J60_CONTROL_CS     BOARD_SPI_SS0
+      #endif
    #elif defined(ARDUINO_ARCH_SAMD)
       #define ENC28J60_CONTROL_CS     SS
    #elif defined(__ARDUINO_ARC__) //Intel ARC32 Genuino 101
@@ -110,7 +118,7 @@
    #elif defined(__MK20DX128__) || defined(__MKL26Z64__) || defined(__MK20DX256__) || defined(__MK64FX512__) || defined(__MK66FX1M0__)
       #define ENC28J60_CONTROL_CS     PIN_SPI_SS
    #endif
-   #if defined(ENC28J60_CONTROL_CS) && !defined(ARDUINO_AVR_LEONARDO)
+   #if defined(ENC28J60_CONTROL_CS) && !defined(ARDUINO_AVR_LEONARDO) && !defined(_VARIANT_MACCHINA_M2_)
       #warning "Not defined ENC28J60_CONTROL_CS. Use borad default SS pin setting. You can configure in 'utility/Enc28J60Network.h'."
    #endif
 #endif
