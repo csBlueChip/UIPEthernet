@@ -93,6 +93,9 @@ public:
   // New function for user specified hostname
   int setHostname(void* vp,  int len = -2);
 
+  // Exposed for raw packet sending
+  static bool network_send();
+
 private:
   static memhandle in_packet;
   static memhandle uip_packet;
@@ -109,8 +112,6 @@ private:
 //  static void configure(IPAddress ip, IPAddress dns, IPAddress gateway, IPAddress subnet);
 
   static void tick();
-
-  static bool network_send();
 
   friend class UIPServer;
 
