@@ -148,7 +148,10 @@ void Enc28J60Network::init(uint8_t* macaddr)
     SPI.setClockDivider(SPI_CLOCK_DIV2); //results in 8MHZ at 16MHZ system clock.
   #elif defined(ARDUINO_ARCH_SAM)
     // SAM-specific code
-    SPI.setClockDivider(10); //defaults to 21 which results in aprox. 4MHZ. A 10 should result in a little more than 8MHZ.
+//    SPI.setClockDivider(10); //defaults to 21 which results in aprox. 4MHZ. A 10 should result in a little more than 8MHZ.
+    // if MHz/21=4,000,000 .. MHz=84,000,000 [check]
+    // 84/2=41MHz ... and the ENC28J60 tops out at 20MHz [datasheet] ... but 2 works better than 4 or 5!? <shrug>
+    SPI.setClockDivider(2); 
   #elif defined(ARDUINO_ARCH_SAMD)
     // SAMD-specific code
     // Should we set clock divider?
@@ -488,11 +491,22 @@ Enc28J60Network::sendPacket(memhandle handle)
     //    writeOp(ENC28J60_BIT_FIELD_CLR, ECON1, ECON1_TXRTS);
     //  }
 
+#if 0 // ORIGINAL CODE
     timeout = 100;
     while (((readReg(EIR) & (EIR_TXIF | EIR_TXERIF)) == 0) && (timeout>0))
       {
       timeout=timeout-1;
       delay(10);
+#elif NO_MINIMUM_DELAY
+    // By reading millis instead of a hard delay of 10mS
+	// I went from 100 packets/S to >5300 packets/S
+    unsigned int ms = millis() + (100 * 10);
+    while ( ((readReg(EIR) & (EIR_TXIF | EIR_TXERIF)) == 0) && (ms > millis()) ) {
+#else
+      // According to errata 12 & 13 [see below] this should be good enough
+	  // ...and it is, even with my shonky test rig
+      for (timeout = 1;  0;  0) {
+#endif		
       #if defined(ESP8266)
          wdt_reset();
       #endif
