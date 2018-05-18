@@ -150,7 +150,7 @@ void Enc28J60Network::init(uint8_t* macaddr)
     // SAM-specific code
 //    SPI.setClockDivider(10); //defaults to 21 which results in aprox. 4MHZ. A 10 should result in a little more than 8MHZ.
     // if MHz/21=4,000,000 .. MHz=84,000,000 [check]
-    // 84/2=41MHz ... and the ENC28J60 tops out at 20MHz [datasheet] ... but 2 works better than 4 or 5!? <shrug>
+    // 84/2=42MHz ... and the ENC28J60 tops out at 20MHz [datasheet] ... but 2 works better than 4 or 5!? <shrug>
     SPI.setClockDivider(2); 
   #elif defined(ARDUINO_ARCH_SAMD)
     // SAMD-specific code
