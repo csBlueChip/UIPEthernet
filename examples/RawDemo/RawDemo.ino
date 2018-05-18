@@ -72,7 +72,7 @@
 // ...but this is just a demo of sending raw packets
 //
 IPAddress      myIP     = {192, 168, 0, 188};    // Default address
-unsigned char  myMAC[6] = {0xAA, 0xAA, 0xAA, 0xAA, 0xBC, 0x01};
+unsigned char  myMAC[6] = {0x02, 0xAA, 0xAA, 0xAA, 0xBC, 0x01};
 
 //------------------------------------------------------------------------------ ---------------------------------------
 // The overhead of an ethernet frame is 18 bytes
