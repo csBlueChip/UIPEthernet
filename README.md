@@ -14,7 +14,7 @@ if name is NULL, errorcode 1 is returned
 if len > 255 or len < -2, errorcode 2 is returned<br>
 if len = -1, the name is treated as a NUL terminated C string (and the actual length is calculated internally)<br>
 if len = -2, as per -1, and also the characters are validated as being in spec of RFC 1533/3.14<br>
-...if validation fails, errorcode -x is returned where abs(x) is the character which failed validation<br>
+...if validation fails, errorcode -x is returned where abs(x) is the position of the character which failed validation<br>
 if len >= 0, name[] is not validated, and the length specified is used<br>
 
 ...If len is not specified, -2 is used as a sane default.
